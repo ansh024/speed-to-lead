@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -14,6 +15,11 @@ import {
   CheckCircle2,
   Flag,
   Copy,
+  Phone,
+  Sparkles,
+  Flame,
+  X,
+  Zap,
 } from "lucide-react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { getCallRecord, sentimentMeta } from "@/data/calls";
@@ -39,6 +45,7 @@ export const Route = createFileRoute("/calls/$callId")({
 function CallDetail() {
   const { call } = Route.useLoaderData();
   const s = sentimentMeta[call.sentiment];
+  const [aiCloseOpen, setAiCloseOpen] = useState(false);
 
   return (
     <div className="flex h-screen w-full bg-slate-50 text-slate-900 font-sans">
@@ -167,6 +174,60 @@ function CallDetail() {
                 </button>
               </div>
 
+              {/* Hot-lead upsell banner */}
+              {call.hotLead && (
+                <div
+                  className="mt-4 overflow-hidden rounded-xl"
+                  style={{
+                    background:
+                      "linear-gradient(105deg, #12273E 0%, #23528B 40%, #12273E 70%, #000000 100%)",
+                  }}
+                >
+                  <div
+                    className="h-px w-full"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, transparent, #559EF2 30%, #559EF2 70%, transparent)",
+                    }}
+                  />
+                  <div className="px-4 py-3.5">
+                    <div className="flex items-center gap-1.5">
+                      <Flame className="h-3.5 w-3.5 shrink-0" style={{ color: "#559EF2" }} />
+                      <span
+                        className="text-[10px] font-bold uppercase tracking-widest"
+                        style={{ color: "#559EF2" }}
+                      >
+                        Hot Lead
+                      </span>
+                    </div>
+                    <p className="mt-1.5 text-sm font-medium leading-snug text-white/90">
+                      <span className="font-semibold text-white">{call.callerName}</span> is
+                      ready to commit — every minute you wait is a minute your competitor
+                      gains.
+                    </p>
+                    <div className="mt-3 flex items-center gap-2">
+                      <button
+                        className="flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold text-white transition-opacity hover:opacity-85"
+                        style={{ background: "#559EF2" }}
+                      >
+                        <Phone className="h-3.5 w-3.5" />
+                        Call Now
+                      </button>
+                      <button
+                        onClick={() => setAiCloseOpen(true)}
+                        className="flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-white/20">
+                        <Sparkles className="h-3.5 w-3.5" />
+                        Let AI Close This
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    className="h-px w-full opacity-20"
+                    style={{ background: "linear-gradient(90deg, transparent, #559EF2, transparent)" }}
+                  />
+                </div>
+              )}
+
               {/* Summary text */}
               <div className="mt-5">
                 <h3 className="text-base font-bold text-slate-900">Summary</h3>
@@ -260,6 +321,149 @@ function CallDetail() {
           </div>
         </div>
       </main>
+      {/* AI Close modal */}
+      {aiCloseOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="relative flex w-full max-w-[680px] overflow-hidden rounded-2xl bg-white shadow-2xl">
+            {/* Close */}
+            <button
+              onClick={() => setAiCloseOpen(false)}
+              className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            {/* Left: copy */}
+            <div className="flex flex-1 flex-col justify-center px-9 py-10">
+              <span className="inline-flex w-fit items-center gap-1.5 rounded-md bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-700">
+                Speed to Lead ⚡
+              </span>
+
+              <h2 className="mt-4 text-[1.6rem] font-bold leading-tight text-slate-900">
+                You reached out to this lead 2 hours late!
+              </h2>
+
+              <p className="mt-2 text-sm leading-relaxed text-slate-500">
+                AI Sales Rep reaches out in under 60 seconds — so the right
+                lead gets the right response, every time.
+              </p>
+
+              <ul className="mt-5 space-y-3.5">
+                {[
+                  {
+                    icon: <Zap className="h-4 w-4 text-slate-600" />,
+                    text: "Respond in under 60s — before any competitor",
+                  },
+                  {
+                    icon: <CheckCircle2 className="h-4 w-4 text-slate-600" />,
+                    text: "Start from a template like Lead Follow-up or Missed Call",
+                  },
+                  {
+                    icon: <Sparkles className="h-4 w-4 text-slate-600" />,
+                    text: "Edit, test, and tweak any time",
+                  },
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
+                      {item.icon}
+                    </span>
+                    <span className="text-sm text-slate-600">{item.text}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <button
+                className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold text-white shadow-sm"
+                style={{ backgroundColor: "#2367BB" }}
+              >
+                Try AI Sales Rep
+              </button>
+              <button
+                onClick={() => setAiCloseOpen(false)}
+                className="mt-3 text-center text-sm text-slate-400 hover:text-slate-600"
+              >
+                Maybe later
+              </button>
+            </div>
+
+            {/* Right: product mockup panel */}
+            <div className="flex w-[300px] shrink-0 flex-col bg-gradient-to-br from-sky-500 to-blue-700 p-5">
+              <div className="overflow-hidden rounded-xl bg-white shadow-lg">
+                {/* Mini browser chrome */}
+                <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-3 py-2">
+                  <div className="flex items-center gap-1.5">
+                    <div className="h-2 w-2 rounded-full bg-rose-400" />
+                    <div className="h-2 w-2 rounded-full bg-amber-400" />
+                    <div className="h-2 w-2 rounded-full bg-emerald-400" />
+                  </div>
+                  <div className="h-3 w-24 rounded bg-slate-200" />
+                  <div className="h-3 w-6 rounded bg-slate-200" />
+                </div>
+
+                <div className="bg-white px-4 pt-3 pb-2">
+                  <div className="text-[11px] font-semibold text-slate-700 uppercase tracking-wider">What happened today</div>
+                </div>
+
+                {/* WITHOUT AI */}
+                <div className="px-4 pb-3">
+                  <div className="mb-1.5 text-[9px] font-semibold uppercase tracking-wider text-rose-500">Without AI</div>
+                  <div className="space-y-1.5 text-[11px]">
+                    {[
+                      { time: "2:14 PM", dot: "bg-amber-400", label: "Lead came in",             style: "text-slate-700" },
+                      { time: "2:17 PM", dot: "bg-rose-400",  label: "Competitor reached out ⚡", style: "text-rose-500 font-semibold" },
+                      { time: "4:31 PM", dot: "bg-slate-400", label: "You called",                style: "text-slate-400 line-through" },
+                    ].map((ev, i) => (
+                      <div key={i} className="flex items-center gap-1.5">
+                        <span className="w-10 shrink-0 text-slate-600">{ev.time}</span>
+                        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${ev.dot}`} />
+                        <span className={ev.style}>{ev.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-2 flex items-center gap-1.5">
+                    <div className="h-1 flex-1 rounded-full bg-rose-100">
+                      <div className="h-full w-full rounded-full bg-rose-400" />
+                    </div>
+                    <span className="text-[10px] font-bold text-rose-500">2h 17m</span>
+                  </div>
+                </div>
+
+                {/* VS */}
+                <div className="mx-4 my-2 flex items-center gap-2">
+                  <div className="h-px flex-1 bg-slate-200" />
+                  <span className="text-[10px] font-bold text-slate-600">VS</span>
+                  <div className="h-px flex-1 bg-slate-200" />
+                </div>
+
+                {/* WITH AI */}
+                <div className="px-4 pb-4">
+                  <div className="mb-1.5 text-[9px] font-semibold uppercase tracking-wider text-emerald-600">With AI Sales Rep</div>
+                  <div className="space-y-1.5 text-[11px]">
+                    {[
+                      { time: "2:14 PM",  dot: "bg-amber-400",  label: "Lead came in",       style: "text-slate-700" },
+                      { time: "2:14:47",  dot: "bg-sky-400",    label: "⚡ AI reached out",  style: "text-sky-600 font-semibold" },
+                      { time: "2:16 PM",  dot: "bg-slate-400",  label: "Lead replied ✓",     style: "text-slate-700" },
+                      { time: "2:18 PM",  dot: "bg-emerald-400",label: "Meeting booked 🎉",  style: "text-emerald-600 font-semibold" },
+                    ].map((ev, i) => (
+                      <div key={i} className="flex items-center gap-1.5">
+                        <span className="w-10 shrink-0 text-slate-600">{ev.time}</span>
+                        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${ev.dot}`} />
+                        <span className={ev.style}>{ev.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-2 flex items-center gap-1.5">
+                    <div className="h-1 flex-1 rounded-full bg-emerald-50">
+                      <div className="h-full w-[4%] rounded-full bg-emerald-400" />
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-600">47 sec</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
