@@ -11,6 +11,9 @@ import {
   ListChecks,
   Calendar,
   Phone,
+  PhoneCall,
+  Settings2,
+  MessageSquare,
 } from "lucide-react";
 
 function NavItem({
@@ -21,6 +24,7 @@ function NavItem({
   hasChevron,
   open,
   collapsed,
+  onClick,
 }: {
   icon: any;
   label: string;
@@ -29,6 +33,7 @@ function NavItem({
   hasChevron?: boolean;
   open?: boolean;
   collapsed?: boolean;
+  onClick?: () => void;
 }) {
   const className = `flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
     collapsed ? "justify-center" : ""
@@ -60,9 +65,18 @@ function NavItem({
     );
   }
   return (
-    <button className={className} title={collapsed ? label : undefined}>
+    <button className={className} title={collapsed ? label : undefined} onClick={onClick}>
       {inner}
     </button>
+  );
+}
+
+function SectionLabel({ label, collapsed }: { label: string; collapsed: boolean }) {
+  if (collapsed) return null;
+  return (
+    <p className="mb-1 mt-3 px-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+      {label}
+    </p>
   );
 }
 
@@ -71,6 +85,7 @@ export function AppSidebar() {
     select: (s) => s.location.pathname,
   });
   const [collapsed, setCollapsed] = useState(false);
+  const [receptionOpen, setReceptionOpen] = useState(true);
   return (
     <aside
       className={`flex flex-col border-r border-slate-200 bg-white transition-[width] duration-200 ${
@@ -102,9 +117,10 @@ export function AppSidebar() {
         )}
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-2">
+      <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-2">
+        <SectionLabel label="Your CRM" collapsed={collapsed} />
         <NavItem icon={Table2} label="CRM" hasChevron open collapsed={collapsed} />
-        <div className={`space-y-1 ${collapsed ? "" : "pl-3"}`}>
+        <div className={`space-y-0.5 ${collapsed ? "" : "pl-3"}`}>
           <NavItem
             icon={Users}
             label="Contacts"
@@ -117,14 +133,14 @@ export function AppSidebar() {
             icon={Phone}
             label="Calls"
             to="/calls"
-            active={pathname === "/calls"}
+            active={pathname.startsWith("/calls")}
             collapsed={collapsed}
           />
           <NavItem
             icon={ListChecks}
             label="Segments"
             to="/segments"
-            active={pathname === "/segments"}
+            active={pathname.startsWith("/segments")}
             collapsed={collapsed}
           />
           <NavItem
@@ -135,6 +151,41 @@ export function AppSidebar() {
             collapsed={collapsed}
           />
         </div>
+
+        <SectionLabel label="Your Frontdesk" collapsed={collapsed} />
+        <NavItem
+          icon={PhoneCall}
+          label="Reception"
+          hasChevron
+          open={receptionOpen}
+          collapsed={collapsed}
+          onClick={() => setReceptionOpen((o) => !o)}
+        />
+        {(receptionOpen || collapsed) && (
+          <div className={`space-y-0.5 ${collapsed ? "" : "pl-3"}`}>
+            <NavItem
+              icon={Phone}
+              label="Calls"
+              to="/calls"
+              active={false}
+              collapsed={collapsed}
+            />
+            <NavItem
+              icon={Settings2}
+              label="Setup"
+              to="/reception/setup"
+              active={pathname.startsWith("/reception/setup")}
+              collapsed={collapsed}
+            />
+            <NavItem
+              icon={MessageSquare}
+              label="Follow-up Text"
+              to="/reception/setup"
+              active={false}
+              collapsed={collapsed}
+            />
+          </div>
+        )}
       </nav>
 
       <div className={`px-4 py-3 ${collapsed ? "flex justify-center px-0" : ""}`}>

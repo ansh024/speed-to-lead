@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ReceptionRouteImport } from './routes/reception'
 import { Route as CallsRouteImport } from './routes/calls'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SequencesIndexRouteImport } from './routes/sequences.index'
@@ -16,9 +17,15 @@ import { Route as SegmentsIndexRouteImport } from './routes/segments.index'
 import { Route as CallsIndexRouteImport } from './routes/calls.index'
 import { Route as SequencesSequenceIdRouteImport } from './routes/sequences.$sequenceId'
 import { Route as SegmentsSegmentIdRouteImport } from './routes/segments.$segmentId'
+import { Route as ReceptionSetupRouteImport } from './routes/reception.setup'
 import { Route as ContactsContactIdRouteImport } from './routes/contacts.$contactId'
 import { Route as CallsCallIdRouteImport } from './routes/calls.$callId'
 
+const ReceptionRoute = ReceptionRouteImport.update({
+  id: '/reception',
+  path: '/reception',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CallsRoute = CallsRouteImport.update({
   id: '/calls',
   path: '/calls',
@@ -54,6 +61,11 @@ const SegmentsSegmentIdRoute = SegmentsSegmentIdRouteImport.update({
   path: '/segments/$segmentId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReceptionSetupRoute = ReceptionSetupRouteImport.update({
+  id: '/setup',
+  path: '/setup',
+  getParentRoute: () => ReceptionRoute,
+} as any)
 const ContactsContactIdRoute = ContactsContactIdRouteImport.update({
   id: '/contacts/$contactId',
   path: '/contacts/$contactId',
@@ -68,8 +80,10 @@ const CallsCallIdRoute = CallsCallIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/calls': typeof CallsRouteWithChildren
+  '/reception': typeof ReceptionRouteWithChildren
   '/calls/$callId': typeof CallsCallIdRoute
   '/contacts/$contactId': typeof ContactsContactIdRoute
+  '/reception/setup': typeof ReceptionSetupRoute
   '/segments/$segmentId': typeof SegmentsSegmentIdRoute
   '/sequences/$sequenceId': typeof SequencesSequenceIdRoute
   '/calls/': typeof CallsIndexRoute
@@ -78,8 +92,10 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/reception': typeof ReceptionRouteWithChildren
   '/calls/$callId': typeof CallsCallIdRoute
   '/contacts/$contactId': typeof ContactsContactIdRoute
+  '/reception/setup': typeof ReceptionSetupRoute
   '/segments/$segmentId': typeof SegmentsSegmentIdRoute
   '/sequences/$sequenceId': typeof SequencesSequenceIdRoute
   '/calls': typeof CallsIndexRoute
@@ -90,8 +106,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/calls': typeof CallsRouteWithChildren
+  '/reception': typeof ReceptionRouteWithChildren
   '/calls/$callId': typeof CallsCallIdRoute
   '/contacts/$contactId': typeof ContactsContactIdRoute
+  '/reception/setup': typeof ReceptionSetupRoute
   '/segments/$segmentId': typeof SegmentsSegmentIdRoute
   '/sequences/$sequenceId': typeof SequencesSequenceIdRoute
   '/calls/': typeof CallsIndexRoute
@@ -103,8 +121,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/calls'
+    | '/reception'
     | '/calls/$callId'
     | '/contacts/$contactId'
+    | '/reception/setup'
     | '/segments/$segmentId'
     | '/sequences/$sequenceId'
     | '/calls/'
@@ -113,8 +133,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/reception'
     | '/calls/$callId'
     | '/contacts/$contactId'
+    | '/reception/setup'
     | '/segments/$segmentId'
     | '/sequences/$sequenceId'
     | '/calls'
@@ -124,8 +146,10 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/calls'
+    | '/reception'
     | '/calls/$callId'
     | '/contacts/$contactId'
+    | '/reception/setup'
     | '/segments/$segmentId'
     | '/sequences/$sequenceId'
     | '/calls/'
@@ -136,6 +160,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CallsRoute: typeof CallsRouteWithChildren
+  ReceptionRoute: typeof ReceptionRouteWithChildren
   ContactsContactIdRoute: typeof ContactsContactIdRoute
   SegmentsSegmentIdRoute: typeof SegmentsSegmentIdRoute
   SequencesSequenceIdRoute: typeof SequencesSequenceIdRoute
@@ -145,6 +170,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reception': {
+      id: '/reception'
+      path: '/reception'
+      fullPath: '/reception'
+      preLoaderRoute: typeof ReceptionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/calls': {
       id: '/calls'
       path: '/calls'
@@ -194,6 +226,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SegmentsSegmentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reception/setup': {
+      id: '/reception/setup'
+      path: '/setup'
+      fullPath: '/reception/setup'
+      preLoaderRoute: typeof ReceptionSetupRouteImport
+      parentRoute: typeof ReceptionRoute
+    }
     '/contacts/$contactId': {
       id: '/contacts/$contactId'
       path: '/contacts/$contactId'
@@ -223,9 +262,22 @@ const CallsRouteChildren: CallsRouteChildren = {
 
 const CallsRouteWithChildren = CallsRoute._addFileChildren(CallsRouteChildren)
 
+interface ReceptionRouteChildren {
+  ReceptionSetupRoute: typeof ReceptionSetupRoute
+}
+
+const ReceptionRouteChildren: ReceptionRouteChildren = {
+  ReceptionSetupRoute: ReceptionSetupRoute,
+}
+
+const ReceptionRouteWithChildren = ReceptionRoute._addFileChildren(
+  ReceptionRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CallsRoute: CallsRouteWithChildren,
+  ReceptionRoute: ReceptionRouteWithChildren,
   ContactsContactIdRoute: ContactsContactIdRoute,
   SegmentsSegmentIdRoute: SegmentsSegmentIdRoute,
   SequencesSequenceIdRoute: SequencesSequenceIdRoute,
