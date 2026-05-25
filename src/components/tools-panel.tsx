@@ -145,7 +145,7 @@ export function ToolsPanel({
       <aside className="relative flex h-full w-full max-w-[440px] flex-col bg-white shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4">
-          <h2 className="text-lg font-semibold text-slate-900">Tools</h2>
+          <h2 className="text-lg font-semibold text-slate-900">Magic Fill</h2>
           <button
             onClick={onClose}
             className="rounded-md border border-slate-200 p-1.5 text-slate-500 hover:bg-slate-100"

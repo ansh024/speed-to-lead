@@ -95,7 +95,7 @@ export const sequences: Sequence[] = [
     trigger: {
       title: "Trigger",
       subtitle: "Attribute change: tag = hot_lead · fires within 5 min",
-      body: "Magic Fill runs automatically if contact is missing email or company name before step 1 fires.",
+
     },
     emailSteps: [
       {

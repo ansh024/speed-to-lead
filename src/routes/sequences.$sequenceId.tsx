@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import {
   ChevronLeft,
@@ -23,9 +24,11 @@ import {
   UserCheck,
   Check,
   Info,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 import { AppSidebar } from "@/components/app-sidebar";
+import { SequenceMagicFillPanel } from "@/components/sequence-magic-fill-panel";
 import {
   getSequence,
   type ApprovalGate,
@@ -75,6 +78,7 @@ const DEFAULT_ACTIVE_DAYS = new Set(["Mon", "Tue", "Wed", "Thu", "Fri"]);
 function SequenceDetailPage() {
   const { sequence } = Route.useLoaderData();
   const steps: SequenceStep[] = sequence.emailSteps ?? [];
+  const [magicFillOpen, setMagicFillOpen] = useState(false);
 
   return (
     <div className="flex h-screen w-full bg-slate-50 text-slate-900 font-sans">
@@ -161,7 +165,7 @@ function SequenceDetailPage() {
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sky-600">
                       <Zap className="h-4 w-4" />
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <div className="text-sm font-semibold text-sky-700">
                         {sequence.trigger?.title ?? "Trigger"}
                       </div>
@@ -173,6 +177,13 @@ function SequenceDetailPage() {
                         <div className="mt-3 text-sm text-slate-600">{sequence.trigger.body}</div>
                       )}
                     </div>
+                    <button
+                      onClick={() => setMagicFillOpen(true)}
+                      className="flex shrink-0 items-center gap-1.5 rounded-md border border-sky-200 bg-white px-2.5 py-1 text-xs font-medium text-sky-700 hover:bg-sky-50"
+                    >
+                      <Sparkles className="h-3 w-3" />
+                      Magic Fill
+                    </button>
                   </div>
                 </div>
 
@@ -328,6 +339,13 @@ function SequenceDetailPage() {
           </div>
         </div>
       </main>
+
+      <SequenceMagicFillPanel
+        open={magicFillOpen}
+        sequenceName={sequence.name}
+        recipientCount={100}
+        onClose={() => setMagicFillOpen(false)}
+      />
     </div>
   );
 }
