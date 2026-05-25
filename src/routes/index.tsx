@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import {
   ChevronDown,
   MessageSquareMore,
@@ -14,7 +15,8 @@ import {
   MoreVertical,
 } from "lucide-react";
 import { AppSidebar } from "@/components/app-sidebar";
-import { contacts, statusMeta } from "@/data/contacts";
+import { ToolsPanel } from "@/components/tools-panel";
+import { contacts, statusMeta, type Contact } from "@/data/contacts";
 
 export const Route = createFileRoute("/")({
   component: ContactsList,
@@ -37,6 +39,7 @@ const columns = [
 ];
 
 function ContactsList() {
+  const [toolsContact, setToolsContact] = useState<Contact | null>(null);
   return (
     <div className="flex h-screen w-full bg-slate-50 text-slate-900 font-sans">
       <AppSidebar />
@@ -253,7 +256,10 @@ function ContactsList() {
                       </td>
                       {/* Con / Magic Fill */}
                       <td className="px-4 py-3">
-                        <button className="flex items-center gap-1.5 rounded-lg border border-sky-200 px-2.5 py-1.5 text-xs font-medium text-sky-600 hover:bg-sky-50">
+                        <button
+                          onClick={() => setToolsContact(contact)}
+                          className="flex items-center gap-1.5 rounded-lg border border-sky-200 px-2.5 py-1.5 text-xs font-medium text-sky-600 hover:bg-sky-50"
+                        >
                           <Sparkles className="h-3.5 w-3.5" />
                           Magic Fill
                         </button>
@@ -278,6 +284,16 @@ function ContactsList() {
           </div>
         </div>
       </main>
+
+      <ToolsPanel
+        open={!!toolsContact}
+        contact={
+          toolsContact
+            ? { name: toolsContact.name, email: toolsContact.emails[0] }
+            : null
+        }
+        onClose={() => setToolsContact(null)}
+      />
     </div>
   );
 }
